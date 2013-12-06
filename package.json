@@ -1,0 +1,14 @@
+{
+  "name": "peerjs-gossip-server",
+  "version": "0.0.0",
+  "description": "PeerGossipServer extends PeerJS-Server with a bootstrap method for initiating a gossip-based overlay.",
+  "main": "peerjs-gossip-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raziel Carvajal Gomez",
+  "license": "MIT",
+  "dependencies": {
+    "peer": "~0.2.1"
+  }
+}
