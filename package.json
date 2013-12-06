@@ -9,6 +9,7 @@
   "author": "Raziel Carvajal Gomez",
   "license": "MIT",
   "dependencies": {
-    "peer": "~0.2.1"
+    "peer": "~0.2.1",
+    "restify": "~2.3.5"
   }
 }
