@@ -2,7 +2,7 @@
   "name": "peerjs-gossip-server",
   "version": "0.0.0",
   "description": "PeerGossipServer extends PeerJS-Server with a bootstrap method for initiating a gossip-based overlay.",
-  "main": "peerjs-gossip-server.js",
+  "main": "lib/peerjs-gossip-server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
