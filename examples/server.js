@@ -1,2 +1,2 @@
 var GossipPeerServer = require('../lib/peerjs-gossip-server.js').GossipPeerServer;
-var server = new GossipPeerServer({ port: 9000, debug: true, startExpTimeout: 15000 });
+var server = new GossipPeerServer({ port: process.argv[2], debug: true, startExpTimeout: process.argv[3] });
