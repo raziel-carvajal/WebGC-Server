@@ -1,0 +1,5 @@
+# GossipServer
+
+## Installation:
+  npm install
+
