@@ -11,5 +11,10 @@
   "dependencies": {
     "peer": "~0.2.1",
     "restify": "~2.3.5"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "jshint": "~2.4.4",
+    "grunt-linter": "~0.3.2"
   }
 }
