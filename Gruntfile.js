@@ -7,7 +7,7 @@ module.exports = function(grunt) {
       options: {
         log: './logs/<%= pkg.name %>.log'
       },
-      files: ['lib/peerjs-gossip-server.js']
+      files: ['lib/*.js']
     }
   });
 
