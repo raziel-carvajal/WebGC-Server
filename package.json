@@ -9,10 +9,10 @@
   "author": "Raziel Carvajal Gomez",
   "license": "MIT",
   "dependencies": {
-    "peer": "~0.2.1",
-    "restify": "~2.3.5",
-    "log4js": "~0.6.14",
-    "colors": "~0.6.2"
+    "peer": "0.2.1",
+    "restify": "2.3.5",
+    "log4js": "0.6.14",
+    "colors": "0.6.2"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
