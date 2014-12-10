@@ -14,9 +14,7 @@ function isInArray(x, array){
 
 function GossipPeerServer(options){
   if( !(this instanceof GossipPeerServer) ) return new GossipPeerServer(options);
-  this.rpsGlobalView = {};
-  this.cluGlovalView = {};
-  this.currentLoop = 0;
+  this.overlay = {};
   PeerServer.call(this, options);
 }
 
@@ -37,10 +35,13 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     return next();
   });
   
-  this._app.get('/:key/:id/view', function(req, res, next){
+  this._app.get('/:key/:id/:profile/view', function(req, res, next){
     console.log('Random view request by ' + req.params.id);
     var key = req.params.key;
     var id = req.params.id;
+    var profile = req.params.profile;
+    console.log('profile: ' + profile);
+    self.overlay[id] = profile;
     var view = self._getIDsRandomly(key, id, self._options.firstViewSize);
     var msg = { view: view };
     msg = JSON.stringify(msg);
@@ -52,40 +53,33 @@ GossipPeerServer.prototype._initializeHTTP = function() {
 
   this._app.get('/:key/:id/getGraph', function(req, res, next){
     console.log('getGraph request received ');
-    var viewType = req.params.viewType;
-    var loop  = req.params.loop;
-    var dic;
-    if(viewType === 'clu')
-      dic = self.cluGlovalView;
-    else
-      dic = self.rpsGlobalView;
-    var view = dic[loop];
-    console.log('Response of getGraph: ' + JSON.stringify(view));
+    var answer = JSON.stringify(self.overlay);
+    console.log('Response of getGraph: ' + answer);
     res.contentType = 'text/html';
-    res.send(JSON.stringify(view));
+    res.send(answer);
     return next();
   });
  
-  this._app.post('/viewForPlotter', function(req, res, next){
-    console.log('viewForPlotter msg received ' + JSON.stringify(msg));
-    var msg = req.body;
-    if(msg.id !== 'undefined'){
-      console.log('View for plotter received by ' + msg.id);
-      var id = msg.id;
-      var data = msg.data;
-      var loop = msg.loop;
-      var algo = msg.algo;
-      var viewStr = msg.view;
-      var view = viewStr.split('___');
-      var obj = {'owner': id, 'loop': loop, 'algo': algo, 'view': view};
-      self.storeView(obj);
-      res.send(200);
-    }else{
-      console.error('PeerId is not present, the will not ve stored');
-      res.send(400);
-    }
-    return next();
-  });
+  //this._app.post('/viewForPlotter', function(req, res, next){
+  //  console.log('viewForPlotter msg received ' + JSON.stringify(msg));
+  //  var msg = req.body;
+  //  if(msg.id !== 'undefined'){
+  //    console.log('View for plotter received by ' + msg.id);
+  //    var id = msg.id;
+  //    var data = msg.data;
+  //    var loop = msg.loop;
+  //    var algo = msg.algo;
+  //    var viewStr = msg.view;
+  //    var view = viewStr.split('___');
+  //    var obj = {'owner': id, 'loop': loop, 'algo': algo, 'view': view};
+  //    self.storeView(obj);
+  //    res.send(200);
+  //  }else{
+  //    console.error('PeerId is not present, the will not ve stored');
+  //    res.send(400);
+  //  }
+  //  return next();
+  //});
   
   this._app.post('/plotter', function(req, res, next){
     console.log('The ID of the plotter was received');
@@ -202,32 +196,32 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
   return result;
 };
 
-GossipPeerServer.prototype.storeView = function(obj){
-  var dic;
-  if(obj.algo === 'Cyclon')
-    dic = this.rpsGlobalView;
-  else if(obj.algo === 'Vicinity')
-    dic = this.cluGlovalView;
-  else{
-    console.error('View type ' + obj.algo + ' is not recognized');
-    console.error('Storage view process abort');
-    return;
-  }
-  if(!dic[obj.loop])
-    dic[obj.loop] = {};
-  var objLoop = dic[obj.loop];
-  if(!objLoop[obj.owner])
-    console.log('First entry for owner ' + obj.owner);
-  else{
-    console.log('There is an entry for owner ' + obj.owner + 
-      ' the view will be replaced');
-  }
-  objLoop[obj.owner] = [];
-  for(var i = 0; i < obj.view.length; i++)
-    objLoop[obj.owner].push(obj.view[i]);
-  console.log('Object ' + obj.algo + ' was updated, the new value is ' +
-    JSON.stringify(dic));
-};
+//GossipPeerServer.prototype.storeView = function(obj){
+//  var dic;
+//  if(obj.algo === 'Cyclon')
+//    dic = this.rpsGlobalView;
+//  else if(obj.algo === 'Vicinity')
+//    dic = this.cluGlovalView;
+//  else{
+//    console.error('View type ' + obj.algo + ' is not recognized');
+//    console.error('Storage view process abort');
+//    return;
+//  }
+//  if(!dic[obj.loop])
+//    dic[obj.loop] = {};
+//  var objLoop = dic[obj.loop];
+//  if(!objLoop[obj.owner])
+//    console.log('First entry for owner ' + obj.owner);
+//  else{
+//    console.log('There is an entry for owner ' + obj.owner + 
+//      ' the view will be replaced');
+//  }
+//  objLoop[obj.owner] = [];
+//  for(var i = 0; i < obj.view.length; i++)
+//    objLoop[obj.owner].push(obj.view[i]);
+//  console.log('Object ' + obj.algo + ' was updated, the new value is ' +
+//    JSON.stringify(dic));
+//};
 
 exports.GossipPeerServer = GossipPeerServer;
 
