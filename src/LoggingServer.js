@@ -5,8 +5,7 @@ var utils = {
   reqSettings: function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-    //res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     next();
   }
 };
@@ -23,10 +22,8 @@ LoggingServer.prototype.setServerReqs = function(){
   this.server.use( utils.reqSettings );
   var self = this;
   
-  this.server.get('/log', function(req, res, next){
-    console.log(JSON.stringify(req));
-    console.log( req.body.data );
-    self.printMsg( req.body.data );
+  this.server.post('/log', function(req, res, next){
+    self.printMsg( req.body );
     res.send(200);
     return next();
   });
