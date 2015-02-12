@@ -50,7 +50,7 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     res.send(msg);
     return next();
   });
-
+  
   this._app.get('/:key/:id/getGraph', function(req, res, next){
     console.log('getGraph request received ');
     var answer = JSON.stringify(self.overlay);
@@ -59,27 +59,6 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     res.send(answer);
     return next();
   });
- 
-  //this._app.post('/viewForPlotter', function(req, res, next){
-  //  console.log('viewForPlotter msg received ' + JSON.stringify(msg));
-  //  var msg = req.body;
-  //  if(msg.id !== 'undefined'){
-  //    console.log('View for plotter received by ' + msg.id);
-  //    var id = msg.id;
-  //    var data = msg.data;
-  //    var loop = msg.loop;
-  //    var algo = msg.algo;
-  //    var viewStr = msg.view;
-  //    var view = viewStr.split('___');
-  //    var obj = {'owner': id, 'loop': loop, 'algo': algo, 'view': view};
-  //    self.storeView(obj);
-  //    res.send(200);
-  //  }else{
-  //    console.error('PeerId is not present, the will not ve stored');
-  //    res.send(400);
-  //  }
-  //  return next();
-  //});
   
   this._app.post('/plotter', function(req, res, next){
     console.log('The ID of the plotter was received');
