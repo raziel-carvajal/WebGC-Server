@@ -22,7 +22,7 @@ LoggingServer.prototype.setServerReqs = function(){
   this.server.use( utils.reqSettings );
   var self = this;
   
-  this.server.post('/log', function(req, res, next){
+  this.server.get('/log', function(req, res, next){
     console.log(JSON.stringify(req));
     console.log( req.body.data );
     self.printMsg( req.body.data );
