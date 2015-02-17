@@ -1,12 +1,6 @@
 var restify = require('restify');
 var util = require('../node_modules/peer/lib/util');
 var PeerServer = require('../node_modules/peer/lib/server').PeerServer;
-//if(PeerServer === 'undefined'){
-//  PeerServer = require('../node_modules/peer/lib/index').PeerServer;
-//  if(PeerServer === 'undefined'){
-//    console.log('Error: PeerServer was not found');
-//  }
-//}
 
 function isInArray(x, array){
   if( array.length === 0 )
@@ -21,6 +15,7 @@ function isInArray(x, array){
 function GossipPeerServer(options){
   if( !(this instanceof GossipPeerServer) ) return new GossipPeerServer(options);
   this.plotterPeerId = 'undefined';
+  this.profiles = {};
   PeerServer.call(this, options);
 }
 
@@ -47,7 +42,7 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     var key = req.params.key;
     var id = req.params.id;
     var view = self._getIDsRandomly(key, id, self._options.firstViewSize);
-    var msg = { plotterId: self.plotterPeerId, view: view };
+    var msg = { view: view };
     msg = JSON.stringify(msg);
     console.log('Response: ' + msg);
     res.contentType = 'text/html';
@@ -56,22 +51,12 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   });
  
   // 
-  this._app.post('/plotter', function(req, res, next){
-    console.log('The ID of the plotter was received');
-//    res.contentType = 'text/html';
-    if( req.body.hasOwnProperty('plotterId') ){
-      if( self.plotterPeerId === 'undefined' ){
-        console.log('The ID of the plotter will be assigned');
-        self.plotterPeerId = req.body.plotterId;
-        res.send(200);
-      }else{
-        console.log('The ID of the plotter was already assigned');
-        res.send(400);
-      }
-    }else{
-      console.log('The request does not contain an ID for the plotter');
-      res.send(400);
-    }
+  this._app.post('/profile', function(req, res, next){
+    console.log('adding new profile');
+    var msg = JSON.parse(req.body);
+    if(!self.profiles.hasOwnProperty(msg.id))
+      self.profiles[ msg.id ] = {id: msg.id, profile: msg.profile};
+    res.send(200);
     return next();
   });
   
@@ -169,7 +154,12 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
       }
     }while( result.length != size );
   }
-  return result;
+  var r = [];
+  for(i = 0; i < result.length; i++){
+    if(this.profiles.hasOwnProperty(result[i]))
+      r.push(this.profiles[ result[i] ]);
+  }
+  return r;
 };
 
 exports.GossipPeerServer = GossipPeerServer;
