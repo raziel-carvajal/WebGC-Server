@@ -59,6 +59,19 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     res.send(200);
     return next();
   });
+
+  //
+    this._app.get('/getGraph', function(req, res, next){
+    console.log('getGraph request received ');
+    var keys = Object.keys(self.profiles), result = {};
+    for(var i = 0; i < keys.length; i++)
+      result[ keys[i] ] = self.profiles[ keys[i] ].profile;
+    var answer = JSON.stringify(result);
+    console.log('Response of getGraph: ' + answer);
+    res.contentType = 'text/html';
+    res.send(answer);
+    return next();
+  });
   
   // Server sets up HTTP streaming when you get post an ID.
   this._app.post('/:key/:id/:token/id', function(req, res, next) {
