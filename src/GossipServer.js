@@ -42,15 +42,20 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   });
 
   this._app.get('/:id/neighbour', function(req, res, next){
+    var id = req.params.id;
     if(!self.orderDone){
       self.clientsWithRank.sort( function(a,b){return a.rank - b.rank;} );
+      console.log('Clients in order: ');
+      console.log(self.clientsWithRank);
       self.orderDone = true;
     }
     var indx = self.clientsRank[id];
     var neigh = 'undefined';
-    if(indx && indx < self.clientsWithRank.length - 1){
+    if(indx && indx < self.clientsWithRank.length - 1)
       neigh = self.clientsWithRank[indx + 1].id;
-    }
+    res.connection = 'text/html';
+    res.send(JSON.stringify({'neighbour': neigh}));
+    return next();
   });
   
   this._app.get('/:key/:id/view', function(req, res, next){
