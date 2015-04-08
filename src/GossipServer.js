@@ -15,6 +15,10 @@ function isInArray(x, array){
 function GossipPeerServer(options){
   if( !(this instanceof GossipPeerServer) ) return new GossipPeerServer(options);
   this.plotterPeerId = 'undefined';
+  this.recRank = 0;
+  this.orderDone = false;
+  this.clientsWithRank = [];
+  this.clientsRank = {};
   this.profiles = {};
   PeerServer.call(this, options);
 }
@@ -35,6 +39,18 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     res.contentType = 'text/html';
     res.send(self._generateClientId(req.params.key));
     return next();
+  });
+
+  this._app.get('/:id/neighbour', function(req, res, next){
+    if(!self.orderDone){
+      self.clientsWithRank.sort( function(a,b){return a.rank - b.rank;} );
+      self.orderDone = true;
+    }
+    var indx = self.clientsRank[id];
+    var neigh = 'undefined';
+    if(indx && indx < self.clientsWithRank.length - 1){
+      neigh = self.clientsWithRank[indx + 1].id;
+    }
   });
   
   this._app.get('/:key/:id/view', function(req, res, next){
@@ -79,10 +95,12 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     var token = req.params.token;
     var key = req.params.key;
     var ip = req.connection.remoteAddress;
-
     if (!self._clients[key] || !self._clients[key][id]) {
       self._checkKey(key, ip, function(err) {
         if (!err && !self._clients[key][id]) {
+          self.clientsRank[id] = self.recRank;
+          self.clientsWithRank.push({'id': id, 'rank': self.recRank});
+          self.recRank++;
           self._clients[key][id] = { token: token, ip: ip };
           self._ips[ip]++;
           self._startStreaming(res, key, id, token, true);
@@ -147,7 +165,7 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
     return [];
   }
   var i = 0, ids = [], result = [], tmp = [], resultSize;
-  for( var j = 0; j < keysArray.length; j += 1){
+  for( var j = 0; j < keysArray.length; j++){
     if( dstId !== keysArray[j] && this.plotterPeerId !== keysArray[j] ){
       ids[i] = keysArray[j];
       i += 1;

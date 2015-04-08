@@ -1,3 +1,5 @@
 node_modules
 src/.*.swp
 src/log
+examples/middleware2014/PeerServer.log
+src/LoggingServer.log
