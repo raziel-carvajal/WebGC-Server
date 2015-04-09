@@ -50,11 +50,15 @@ GossipPeerServer.prototype._initializeHTTP = function() {
       self.orderDone = true;
     }
     var indx = self.clientsRank[id];
-    var neigh = 'undefined';
-    if(indx && indx < self.clientsWithRank.length - 1)
+    var neigh = 'void';
+    if(indx !== 0 && indx < self.clientsWithRank.length - 1)
       neigh = self.clientsWithRank[indx + 1].id;
-    res.connection = 'text/html';
-    res.send(JSON.stringify({'neighbour': neigh}));
+    else if(indx === 0)
+      neigh = self.clientsWithRank[1].id;
+    res.contentType = 'text/html';
+    console.log('Neighbour of: ' + id + " is: " + neigh);
+    var msg = JSON.stringify({'neighbour': neigh});
+    res.send(msg);
     return next();
   });
   
