@@ -14,7 +14,6 @@ function isInArray(x, array){
 
 function GossipPeerServer(options){
   if( !(this instanceof GossipPeerServer) ) return new GossipPeerServer(options);
-  this.plotterPeerId = 'undefined';
   this.recRank = 0;
   this.orderDone = false;
   this.clientsWithRank = [];
@@ -113,13 +112,11 @@ GossipPeerServer.prototype._initializeHTTP = function() {
           self._clients[key][id] = { token: token, ip: ip };
           self._ips[ip]++;
           self._startStreaming(res, key, id, token, true);
-        } else {
+        }else
           res.send(JSON.stringify({ type: 'HTTP-ERROR' }));
-        }
       });
-    } else {
+    }else
       self._startStreaming(res, key, id, token);
-    }
     return next();
   });
 
@@ -175,7 +172,7 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
   }
   var i = 0, ids = [], result = [], tmp = [], resultSize;
   for( var j = 0; j < keysArray.length; j++){
-    if( dstId !== keysArray[j] && this.plotterPeerId !== keysArray[j] ){
+    if( dstId !== keysArray[j] ){
       ids[i] = keysArray[j];
       i += 1;
     }
@@ -200,6 +197,12 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
       r.push(this.profiles[ result[i] ]);
   }
   return r;
+};
+
+GossipPeerServer.prototype._isPeerInRecord = function(id){
+  var peerIds = Object.keys(this.clientsRank);
+  if( peerIds.lastIndexOf(id, peerIds.length -1) != -1 ){ return true; }
+  else{ return false; }
 };
 
 exports.GossipPeerServer = GossipPeerServer;
