@@ -114,8 +114,10 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   
   this._app.post('/checkPeerId', function(req, res, next){
     var msg = JSON.parse(req.body);
-    var inte = self.clientsRank.hasOwnProperty(msg.id) ? 199 : 200;
-    res.send(inte);
+    var registered = self.clientsRank.hasOwnProperty(msg.id) ? true : false;
+    var answer = JSON.stringify({'answer': registered});
+    res.contentType = 'text/html';
+    res.send(answer);
     return next();
   });
   
