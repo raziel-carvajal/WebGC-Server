@@ -93,7 +93,6 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   
   //
   this._app.post('/keepAlive', function(req, res, next){
-    console.log('Keep alive received: ' + req.body);
     var msg = JSON.parse(req.body);
     self.keepAlives[msg.id] = 0;
     res.send(200);
@@ -101,7 +100,7 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   });
   
   //
-    this._app.get('/getGraph', function(req, res, next){
+  this._app.get('/getGraph', function(req, res, next){
     console.log('getGraph request received ');
     var keys = Object.keys(self.profiles), result = {};
     for(var i = 0; i < keys.length; i++)
@@ -110,6 +109,15 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     console.log('Response of getGraph: ' + answer);
     res.contentType = 'text/html';
     res.send(answer);
+    return next();
+  });
+  
+  this._app.get('/checkPeerId', function(req, res, next){
+    var msg = JSON.parse(req.body);
+    if(self.clientsRank.hasOwnProperty(msg.id))
+      res.send(199);
+    else
+      res.send(200);
     return next();
   });
   
