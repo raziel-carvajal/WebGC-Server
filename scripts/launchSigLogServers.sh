@@ -19,7 +19,7 @@
 #===============================================================================
 here=`pwd`
 cd ../examples/middleware2014
-node server.js 9990 4 >/dev/null &
+node server.js 9990 4 >log &
 cd $here
 cd ../src
 node LoggingServer.js 9991 >log &
