@@ -24,7 +24,7 @@ function GossipPeerServer(options){
   this.checkForDeadPeers = options.checkForDeadPeers;
   PeerServer.call(this, options);
   var self = this;
-  window.setInterval(function(){
+  setInterval(function(){
     self.removeDeadPeers();
   }, this.checkForDeadPeers);
 }
@@ -222,8 +222,10 @@ GossipPeerServer.prototype.removeDeadPeers = function(){
       deadPeers.push(keys[i]);
   }
   for(i = 0; i < deadPeers.length; i++){
-    if(this.profiles.hasOwnProperty(deadPeers[i]))
+    if(this.profiles.hasOwnProperty(deadPeers[i])){
       delete this.profiles[ deadPeers[i] ];
+      delete this.keepAlives[ deadPeers[i] ];
+    }
   }
 };
 
