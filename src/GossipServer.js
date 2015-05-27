@@ -95,7 +95,7 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   this._app.post('/keepAlive', function(req, res, next){
     console.log('Keep alive received: ' + req.body);
     var msg = JSON.parse(req.body);
-    this.keepAlives[msg.id] = 0;
+    self.keepAlives[msg.id] = 0;
     res.send(200);
     return next();
   });
