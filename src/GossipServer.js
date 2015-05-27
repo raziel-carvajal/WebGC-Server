@@ -19,7 +19,14 @@ function GossipPeerServer(options){
   this.clientsWithRank = [];
   this.clientsRank = {};
   this.profiles = {};
+  this.keepAlives = {};
+  this.maxKeepAlives = options.maxKeepAlives;
+  this.checkForDeadPeers = options.checkForDeadPeers;
   PeerServer.call(this, options);
+  var self = this;
+  window.setInterval(function(){
+    self.removeDeadPeers();
+  }, this.checkForDeadPeers);
 }
 
 util.inherits(GossipPeerServer, PeerServer);
@@ -83,7 +90,15 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     res.send(200);
     return next();
   });
-
+  
+  //
+  this._app.post('/keepAlive', function(req, res, next){
+    var msg = JSON.parse(req.body);
+    this.keepAlives[msg.id] = 0;
+    res.send(200);
+    return next();
+  });
+  
   //
     this._app.get('/getGraph', function(req, res, next){
     console.log('getGraph request received ');
@@ -199,10 +214,17 @@ GossipPeerServer.prototype._getIDsRandomly = function(key, dstId, size){
   return r;
 };
 
-GossipPeerServer.prototype._isPeerInRecord = function(id){
-  var peerIds = Object.keys(this.clientsRank);
-  if( peerIds.lastIndexOf(id, peerIds.length -1) != -1 ){ return true; }
-  else{ return false; }
+GossipPeerServer.prototype.removeDeadPeers = function(){
+  var deadPeers = [], i;
+  for(i = 0, keys = Object.keys(this.keepAlives); i < keys.length; i++){
+    this.keepAlives[ keys[i] ]++;
+    if(this.keepAlives[ keys[i] ] >= this.maxKeepAlives)
+      deadPeers.push(keys[i]);
+  }
+  for(i = 0; i < deadPeers.length; i++){
+    if(this.profiles.hasOwnProperty(deadPeers[i]))
+      delete this.profiles[ deadPeers[i] ];
+  }
 };
 
 exports.GossipPeerServer = GossipPeerServer;
