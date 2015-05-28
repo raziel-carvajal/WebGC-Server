@@ -87,7 +87,9 @@ GossipPeerServer.prototype._initializeHTTP = function() {
     var msg = JSON.parse(req.body);
     if(!self.profiles.hasOwnProperty(msg.id))
       self.profiles[ msg.id ] = {id: msg.id, profile: msg.profile};
-    res.send(200);
+    var answer = JSON.stringify({success: true});
+    res.contentType = 'text/html';
+    res.send(answer);
     return next();
   });
   
@@ -95,7 +97,9 @@ GossipPeerServer.prototype._initializeHTTP = function() {
   this._app.post('/keepAlive', function(req, res, next){
     var msg = JSON.parse(req.body);
     self.keepAlives[msg.id] = 0;
-    res.send(200);
+    var answer = JSON.stringify({success: true});
+    res.contentType = 'text/html';
+    res.send(answer);
     return next();
   });
   
