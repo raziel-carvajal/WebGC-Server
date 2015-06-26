@@ -1,0 +1,29 @@
+{
+  "name": "serverjs-gossip",
+  "version": "0.3.0",
+  "description": "New signaling server for being compatible with a WebGC client",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://raziel-c@scm.gforge.inria.fr//gitroot/serverjs-gossip/serverjs-gossip.git"
+  },
+  "keywords": [
+    "p2p",
+    "signaling",
+    "service",
+    "webrtc"
+  ],
+  "author": "Raziel Carvajal <raziel.carvajal@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "restify": "~3.0.3",
+    "debug": "~2.2.0",
+    "inherits": "~2.0.1"
+  }
+}
