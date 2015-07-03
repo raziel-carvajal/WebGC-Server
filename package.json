@@ -24,6 +24,8 @@
   "dependencies": {
     "restify": "~3.0.3",
     "debug": "~2.2.0",
-    "inherits": "~2.0.1"
+    "inherits": "~2.0.1",
+    "onramp": "~0.3.1",
+    "commander": "~2.8.1"
   }
 }

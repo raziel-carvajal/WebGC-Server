@@ -31,6 +31,9 @@ function GossipPeerServer(options){
 
 util.inherits(GossipPeerServer, PeerServer);
 
+// TODO The only way to attach the Gossip HTTP request in this server was to
+// overwrite this method. Is it possible to add HTTP GETs/POSTs once the
+// restify server listens ?
 GossipPeerServer.prototype._initializeHTTP = function() {
   var self = this;
   
