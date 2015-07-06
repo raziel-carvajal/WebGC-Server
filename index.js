@@ -1,4 +1,3 @@
-module.exports = SignalingService
 // var debug = require('debug')('signaling-service')
 // var inherits = require('inherits')
 // var http = require('http')
@@ -58,6 +57,9 @@ module.exports = SignalingService
 //     }
 //   }
 // }
+
+exports.SignalingService = SignalingService
+
 var debug = require('debug')('signaling-service')
 var restify = require('restify')
 var inherits = require('inherits')
