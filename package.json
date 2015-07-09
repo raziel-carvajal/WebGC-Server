@@ -24,8 +24,8 @@
   "dependencies": {
     "peer": "0.2.1",
     "restify": "~3.0.3",
-    "debug": "~2.2.0",
     "inherits": "~2.0.1",
-    "commander": "~2.8.1"
+    "commander": "~2.8.1",
+    "debug": "~2.2.0"
   }
 }
