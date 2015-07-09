@@ -108,18 +108,18 @@ SignalingService.prototype._initializeHTTP = function() {
   // PeerServer code ENDS ////////////////////////////////////////////////////////
   // SingnalingService code STARTS////////////////////////////////////////////////
   this._app.get('/:key/:id/:profile/peerToBoot', function (req, res, next) {
-    debug('PASSI')
+    debug('peerToBoot')
     var id = req.params.id
     var key = req.params.key
     var peer = 'undefined'
     var profile = req.params.profile
     res.contentType = 'text/html'
-    debug('PASS')
     if (self._clients[key]) {
       if (self._clients[key][id]) {
         self._profiles[id] = profile
         self._chosen[id] = 0
-        if (Object.keys(self._clients[key] > 1)) peer = self._getInRoundRobin(id)
+        if (Object.keys(self._clients[key]).length > 1) peer = self._getInRoundRobin(id)
+        debug('For ' + id + ' the next peer to boot was chosen ' + peer)
         res.send(peer)
       } else {
         res.send(JSON.stringify({
@@ -217,21 +217,15 @@ SignalingService.prototype._initializeHTTP = function() {
 
 SignalingService.prototype._getInRoundRobin = function (emitter) {
   var j = 0
-  for (peerId in self._chosen) {
-    if (emitter !== peerId && self._chosen[peerId] === 0) {
-      self._chosen[peerId] = 1
-      if (j === Object.keys(self._chosen).length - 1) { for (key in self._chosen) self._chosen[key] = 0 }
+  for (peerId in this._chosen) {
+    if (emitter !== peerId && this._chosen[peerId] === 0) {
+      this._chosen[peerId] = 1
+      if (j === Object.keys(this._chosen).length - 1) { for (key in this._chosen) this._chosen[key] = 0 }
       return peerId
     }
     j++
   }
 }
-
-
-
-
-
-
 
 /** Get a random view of peer ID's */
 SignalingService.prototype._getIDsRandomly = function (key, dstId, size) {
