@@ -112,6 +112,7 @@ SignalingService.prototype._initializeHTTP = function() {
     var id = req.params.id
     var key = req.params.key
     var peer = 'undefined'
+    var peerProfile = 'undefined'
     var profile = req.params.profile
     res.contentType = 'text/html'
     if (self._clients[key]) {
@@ -119,8 +120,9 @@ SignalingService.prototype._initializeHTTP = function() {
         self._profiles[id] = profile
         self._chosen[id] = 0
         if (Object.keys(self._clients[key]).length > 1) peer = self._getInRoundRobin(id)
+        if (peer !== 'undefined') peerProfile = self._profiles[peer]
         debug('For ' + id + ' the next peer to boot was chosen ' + peer)
-        res.send(peer)
+        res.send(JSON.stringify({ 'peer': peer, 'profile': peerProfile }))
       } else {
         res.send(JSON.stringify({
           type: 'HTTP-ERROR',
