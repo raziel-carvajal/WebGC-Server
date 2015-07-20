@@ -114,6 +114,8 @@ SignalingService.prototype._initializeHTTP = function() {
     var peer = 'undefined'
     var peerProfile = 'undefined'
     var profile = req.params.profile
+    debug('PeerId: ' + id)
+    debug('Profile: ' + profile)
     res.contentType = 'text/html'
     if (self._clients[key]) {
       if (self._clients[key][id]) {
@@ -121,8 +123,10 @@ SignalingService.prototype._initializeHTTP = function() {
         self._chosen[id] = 0
         if (Object.keys(self._clients[key]).length > 1) peer = self._getInRoundRobin(id)
         if (peer !== 'undefined') peerProfile = self._profiles[peer]
-        debug('For ' + id + ' the next peer to boot was chosen ' + peer)
-        res.send(JSON.stringify({ 'peer': peer, 'profile': peerProfile }))
+        var answ = {'peer': peer, 'profile': peerProfile}
+        var answTxt = JSON.stringify(answ)
+        debug('For ' + id + ' the next peer to boot was chosen ' + peer + ' with answer: ' + answTxt)
+        res.send(answTxt)
       } else {
         res.send(JSON.stringify({
           type: 'HTTP-ERROR',
