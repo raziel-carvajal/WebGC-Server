@@ -1,17 +1,12 @@
 exports.SignalingService = SignalingService
-
 var debug = require('debug')('signaling-service')
 var restify = require('restify')
 var inherits = require('inherits')
 var PeerServer = require('peer').PeerServer
-
 inherits(SignalingService, PeerServer)
-
 function SignalingService(options) {
   if (!(this instanceof SignalingService)) return new SignalingService(options)
   PeerServer.call(this, options)
-  this.recRank = 0
-  this.clientsRank = {}
   this._profiles = {}
   this._chosen = {}
   this.keepAlives = {}
@@ -23,7 +18,6 @@ function SignalingService(options) {
   }, this.checkForDeadPeers)
   debug('SignalingService.init')
 }
-
 // TODO The only way to attach the Gossip HTTP request in this server was to
 // overwrite this method. Is it possible to add HTTP GETs/POSTs once the
 // restify server listens ?
@@ -36,11 +30,9 @@ SignalingService.prototype._initializeHTTP = function() {
     next();
   }
   var self = this;
-
   this._app.use(restify.bodyParser({ mapParams: false }));
   this._app.use(restify.queryParser());
   this._app.use(allowCrossDomain);
-
   // Retrieve guaranteed random ID.
   this._app.get('/:key/id', function (req, res, next) {
     debug('ID-GEN')
@@ -48,14 +40,12 @@ SignalingService.prototype._initializeHTTP = function() {
     res.send(self._generateClientId(req.params.key));
     return next();
   });
-
   // Server sets up HTTP streaming when you get post an ID.
   this._app.post('/:key/:id/:token/id', function (req, res, next) {
     var id = req.params.id;
     var token = req.params.token;
     var key = req.params.key;
     var ip = req.connection.remoteAddress;
-
     if (!self._clients[key] || !self._clients[key][id]) {
       self._checkKey(key, ip, function (err) {
         if (!err && !self._clients[key][id]) {
@@ -71,11 +61,9 @@ SignalingService.prototype._initializeHTTP = function() {
     }
     return next();
   });
-
   var handle = function (req, res, next) {
     var key = req.params.key;
     var id = req.params.id;
-
     var client;
     if (!self._clients[key] || !(client = self._clients[key][id])) {
       if (req.params.retry) {
@@ -87,7 +75,6 @@ SignalingService.prototype._initializeHTTP = function() {
       }
       return;
     }
-
     // Auth the req
     if (req.params.token !== client.token) {
       res.send(401);
@@ -111,17 +98,12 @@ SignalingService.prototype._initializeHTTP = function() {
     var key = req.params.key
     var peer = 'undefined'
     var peerProfile = 'undefined'
-    // var profile = req.params.profile
     debug('PeerId: ' + id)
-    // debug('Profile: ' + profile)
     res.contentType = 'text/html'
     if (self._clients[key]) {
       if (self._clients[key][id]) {
-        // self._profiles[id] = profile
         self._chosen[id] = 0
         if (Object.keys(self._clients[key]).length > 1) peer = self._getInRoundRobin(id)
-        // if (peer !== 'undefined') peerProfile = self._profiles[peer]
-        // var answ = {'peer': peer, 'profile': peerProfile}
         var answ = {'peer': peer}
         var answTxt = JSON.stringify(answ)
         debug('For ' + id + ' the next peer to boot was chosen ' + peer + ' with answer: ' + answTxt)
@@ -137,36 +119,6 @@ SignalingService.prototype._initializeHTTP = function() {
     }
     return next()
   })
-  // this._app.get('/:id/neighbour', function (req, res, next) {
-  //   var id = req.params.id
-  //   if (!self.orderDone) {
-  //     self.clientsWithRank.sort(function (a,b) { return a.rank - b.rank })
-  //     debug('Clients in order: ')
-  //     debug(self.clientsWithRank)
-  //     self.orderDone = true
-  //   }
-  //   var indx = self.clientsRank[id]
-  //   var neigh = 'void'
-  //   if (indx !== 0 && indx < self.clientsWithRank.length - 1) neigh = self.clientsWithRank[indx + 1].id
-  //   else if (indx === 0) neigh = self.clientsWithRank[1].id
-  //   res.contentType = 'text/html'
-  //   debug('Neighbour of: ' + id + " is: " + neigh)
-  //   var msg = JSON.stringify({'neighbour': neigh})
-  //   res.send(msg)
-  //   return next()
-  // })
-  // this._app.get('/:key/:id/view', function (req, res, next) {
-  //   debug('Random view request by [' + req.params.id + ']')
-  //   var key = req.params.key
-  //   var id = req.params.id
-  //   var view = self._getIDsRandomly(key, id, self._options.firstViewSize)
-  //   var msg = { view: view }
-  //   msg = JSON.stringify(msg)
-  //   debug('Response: ' + msg)
-  //   res.contentType = 'text/html'
-  //   res.send(msg)
-  //   return next()
-  // }) 
   this._app.post('/profile', function (req, res, next) {
     debug('adding new profile')
     var msg = JSON.parse(req.body)
@@ -199,7 +151,7 @@ SignalingService.prototype._initializeHTTP = function() {
   })
   this._app.post('/checkPeerId', function (req, res, next) {
     var msg = JSON.parse(req.body)
-    var registered = self.clientsRank.hasOwnProperty(msg.id) ? true : false
+    var registered = self._clients.hasOwnProperty(msg.id) ? true : false
     var answer = JSON.stringify({'answer': registered})
     res.contentType = 'text/html'
     res.send(answer)
@@ -208,18 +160,13 @@ SignalingService.prototype._initializeHTTP = function() {
   // SignalingService code ENDS
   // PeerServer code STARTS
   this._app.post('/:key/:id/:token/offer', handle);
-
   this._app.post('/:key/:id/:token/candidate', handle);
-
   this._app.post('/:key/:id/:token/answer', handle);
-
   this._app.post('/:key/:id/:token/leave', handle);
-
   // Listen on user-specified port.
   this._app.listen(this._options.port)
   // PeerServer code ENDS
 };
-
 SignalingService.prototype._getInRoundRobin = function (emitter) {
   var j = 0
   for (peerId in this._chosen) {
@@ -231,41 +178,6 @@ SignalingService.prototype._getInRoundRobin = function (emitter) {
     j++
   }
 }
-
-/** Get a random view of peer ID's */
-// SignalingService.prototype._getIDsRandomly = function (key, dstId, size) {
-//   var keysArray = Object.keys(this._clients[key])
-//   if( keysArray.length === 0 ) return []
-//   var i = 0
-//   var ids = []
-//   var result = []
-//   var tmp = []
-//   var resultSize
-//   for (var j = 0; j < keysArray.length; j++){
-//     if (dstId !== keysArray[j]) {
-//       ids[i] = keysArray[j]
-//       i += 1
-//     }
-//   }
-//   resultSize = ids.length
-//   if (size >= resultSize) {
-//     for(var keyId in ids) result.push(ids[keyId])
-//   } else {
-//     do {
-//       rNum = Math.floor(Math.random() * resultSize)
-//       // rNum NOT IN tmp ?
-//       if (tmp.indexOf(rNum, 0) < 0){
-//         tmp.push(rNum)
-//         result.push(ids[rNum])
-//       }
-//     } while (result.length != size)
-//   }
-//   var r = []
-//   for (i = 0; i < result.length; i++){
-//     if (this._profiles.hasOwnProperty(result[i])) r.push(this._profiles[ result[i] ])
-//   }
-//   return r
-// }
 SignalingService.prototype.removeDeadPeers = function () {
   var deadPeers = []
   var  i
