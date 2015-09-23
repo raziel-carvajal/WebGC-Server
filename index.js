@@ -7,15 +7,13 @@ inherits(SignalingService, PeerServer)
 function SignalingService(options) {
   if (!(this instanceof SignalingService)) return new SignalingService(options)
   PeerServer.call(this, options)
-  this._profiles = {}
+  this._key = options.key
   this._chosen = {}
   this.keepAlives = {}
   this.maxKeepAlives = options.maxKeepAlives
   this.checkForDeadPeers = options.checkForDeadPeers
   var self = this
-  setInterval(function () {
-    self.removeDeadPeers()
-  }, this.checkForDeadPeers)
+  setInterval(function () { self.removeDeadPeers() }, this.checkForDeadPeers)
   debug('SignalingService.init')
 }
 // TODO The only way to attach the Gossip HTTP request in this server was to
@@ -119,17 +117,6 @@ SignalingService.prototype._initializeHTTP = function() {
     }
     return next()
   })
-  this._app.post('/profile', function (req, res, next) {
-    debug('adding new profile')
-    var msg = JSON.parse(req.body)
-    if (!self._profiles.hasOwnProperty(msg.id) ) {
-      self._profiles[ msg.id ] = {id: msg.id, profile: msg.profile}
-    }
-    var answer = JSON.stringify({success: true})
-    res.contentType = 'text/html'
-    res.send(answer)
-    return next()
-  })
   this._app.post('/keepAlive', function (req, res, next) {
     var msg = JSON.parse(req.body)
     self.keepAlives[msg.id] = 0
@@ -140,9 +127,9 @@ SignalingService.prototype._initializeHTTP = function() {
   })
   this._app.get('/getGraph', function (req, res, next) {
     debug('getGraph request received ')
-    var keys = Object.keys(self._profiles)
-    var result = {}
-    for (var i = 0; i < keys.length; i++) result[ keys[i] ] = self._profiles[ keys[i] ].profile
+    var keys = Object.keys(self.keepAlives)
+    var result = []
+    for (var i = 0; i < keys.length; i++) result.push(keys[i])
     var answer = JSON.stringify(result)
     debug('Response of getGraph: ' + answer)
     res.contentType = 'text/html'
@@ -151,7 +138,7 @@ SignalingService.prototype._initializeHTTP = function() {
   })
   this._app.post('/checkPeerId', function (req, res, next) {
     var msg = JSON.parse(req.body)
-    var registered = self._clients.hasOwnProperty(msg.id) ? true : false
+    var registered = self._chosen.hasOwnProperty(msg.id) ? true : false
     var answer = JSON.stringify({'answer': registered})
     res.contentType = 'text/html'
     res.send(answer)
@@ -179,16 +166,13 @@ SignalingService.prototype._getInRoundRobin = function (emitter) {
   }
 }
 SignalingService.prototype.removeDeadPeers = function () {
-  var deadPeers = []
-  var  i
-  for (i = 0, keys = Object.keys(this.keepAlives); i < keys.length; i++) {
+  var keys = Object.keys(this.keepAlives)
+  for (var i = 0; i < keys.length; i++) {
     this.keepAlives[ keys[i] ]++
-    if (this.keepAlives[ keys[i] ] >= this.maxKeepAlives) deadPeers.push(keys[i])
-  }
-  for (i = 0; i < deadPeers.length; i++) {
-    if (this._profiles.hasOwnProperty(deadPeers[i])) {
-      delete this._profiles[deadPeers[i]]
-      delete this.keepAlives[deadPeers[i]]
+    if (this.keepAlives[ keys[i] ] >= this.maxKeepAlives) {
+      delete this.keepAlives[ keys[i] ]
+      delete this._chosen[ keys[i] ]
+      delete this._clients[this._key][ keys[i] ]
     }
   }
 }
