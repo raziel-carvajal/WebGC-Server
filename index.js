@@ -101,7 +101,7 @@ SignalingService.prototype._initializeHTTP = function() {
     if (self._clients[key]) {
       if (self._clients[key][id]) {
         self._chosen[id] = 0
-        if (Object.keys(self._clients[key]).length > 1) peer = self._getInRoundRobin(id)
+        if (Object.keys(self._clients[key]).length > 0) peer = self._getInRoundRobin(id)
         var answ = {'peer': peer}
         var answTxt = JSON.stringify(answ)
         debug('For ' + id + ' the next peer to boot was chosen ' + peer + ' with answer: ' + answTxt)
@@ -157,10 +157,12 @@ SignalingService.prototype._initializeHTTP = function() {
 SignalingService.prototype._getInRoundRobin = function (emitter) {
   var j = 0
   for (peerId in this._chosen) {
-    if (emitter !== peerId && this._chosen[peerId] === 0) {
-      this._chosen[peerId] = 1
-      if (j === Object.keys(this._chosen).length - 1) { for (key in this._chosen) this._chosen[key] = 0 }
+    //if (emitter !== peerId && this._chosen[peerId] === 0) {
+    if (emitter !== peerId) {
       return peerId
+      //this._chosen[peerId] = 1
+      //if (j === Object.keys(this._chosen).length - 1) { for (key in this._chosen) this._chosen[key] = 0 }
+      //return peerId
     }
     j++
   }
