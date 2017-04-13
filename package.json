@@ -22,7 +22,7 @@
   "author": "Raziel Carvajal <raziel.carvajal@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "peer": "0.2.1",
+    "peer": "~0.2.1",
     "restify": "~3.0.3",
     "inherits": "~2.0.1",
     "commander": "~2.8.1",
