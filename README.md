@@ -14,3 +14,9 @@ Be sure that [NodeJS](http://nodejs.org/), [Bower](http://bower.io/), [Git](http
 Nowadays this project does not contain examples for showing how to use this server, besides, the 
 PeerJS-Gossip project depends of this server. So, the PeerJS-Gossip project considers ServerJS-Gossip in
 its use cases. Refer to the PeerJS-Gossip project in order to understand how ServerJS-Gossip is used.
+
+# IDDN
+`IDDN.FR.001.120008.000.S.P.2017.000.10600`
+
+# License
+[GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html)
