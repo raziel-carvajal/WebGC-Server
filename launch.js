@@ -1,4 +1,4 @@
-var SignalingService = require('index').SignalingService
+var SignalingService = require('./index').SignalingService
 var server = new SignalingService({
   port: process.argv[2],
   debug: true,

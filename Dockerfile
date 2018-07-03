@@ -1,12 +1,13 @@
-from node:1.0.0
+from node:10-stretch
 
 workdir /usr/webgc_server
 
-run apt-get update -qq
+run apt-get update && \
+  apt-get install -y --no-install-recommends python
 
-add *.js .
-add package.json .
+add *.js ./
+add package.json ./
 
 run npm install
 
-cmd ["npm start"]
+cmd npm start

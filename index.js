@@ -1,9 +1,8 @@
-exports.SignalingService = SignalingService
 var debug = require('debug')('signaling-service')
 var restify = require('restify')
-var inherits = require('inherits')
-var PeerServer = require('peer').PeerServer
-inherits(SignalingService, PeerServer)
+var inherits = require('util').inherits
+const PeerServer = require('peer').PeerServer.super_.init
+
 function SignalingService(options) {
   if (!(this instanceof SignalingService)) return new SignalingService(options)
   PeerServer.call(this, options)
@@ -16,6 +15,9 @@ function SignalingService(options) {
   setInterval(function () { self.removeDeadPeers() }, this.checkForDeadPeers)
   debug('SignalingService.init')
 }
+
+debug('hinherits')
+inherits(SignalingService, PeerServer)
 // TODO The only way to attach the Gossip HTTP request in this server was to
 // overwrite this method. Is it possible to add HTTP GETs/POSTs once the
 // restify server listens ?
@@ -180,3 +182,5 @@ SignalingService.prototype.removeDeadPeers = function () {
     }
   }
 }
+
+exports.SignalingService = SignalingService
