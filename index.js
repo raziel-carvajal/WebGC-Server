@@ -1,11 +1,13 @@
 var debug = require('debug')('signaling-service')
 var restify = require('restify')
 var inherits = require('util').inherits
-const PeerServer = require('peer').PeerServer.super_.init
+// const PeerServer = require('peer').PeerServer.super_.init
+const PeerServer = require('peer').PeerServer
 
 function SignalingService(options) {
   if (!(this instanceof SignalingService)) return new SignalingService(options)
   PeerServer.call(this, options)
+  this._initializeHTTP();
   this._key = options.key
   this._chosen = {}
   this.keepAlives = {}
