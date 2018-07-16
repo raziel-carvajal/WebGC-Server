@@ -1,4 +1,4 @@
-from node:10-stretch
+from node:6
 
 workdir /usr/webgc_server
 
