@@ -1,4 +1,4 @@
-from node:10-stretch
+from node:6
 
 workdir /usr/webgc_server
 
@@ -8,6 +8,8 @@ run apt-get update && \
 add *.js ./
 add package.json ./
 
+expose 8080
+
 run npm install
 
-cmd npm start
+#cmd npm start
