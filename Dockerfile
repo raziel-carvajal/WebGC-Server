@@ -12,4 +12,4 @@ expose 8080
 
 run npm install
 
-#cmd npm start
+cmd npm start
