@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "start": "DEBUG=* node launch.js 8080",
+    "start": "DEBUG=* node launch.js 8080 > Signaling-Service.log",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

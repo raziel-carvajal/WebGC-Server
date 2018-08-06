@@ -30,12 +30,16 @@ SignalingService.prototype._initializeHTTP = function() {
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     next();
+    debug('Content of Request' + req)
+    debug('Content of Response' + res)
+    
   }
   var self = this;
   this._app.use(restify.bodyParser({ mapParams: false }));
   this._app.use(restify.queryParser());
   this._app.use(allowCrossDomain);
   // Retrieve guaranteed random ID.
+
   this._app.get('/:key/id', function (req, res, next) {
     debug('ID-GEN')
     res.contentType = 'text/html';
@@ -43,6 +47,8 @@ SignalingService.prototype._initializeHTTP = function() {
     return next();
   });
   // Server sets up HTTP streaming when you get post an ID.
+  // Ici il faut debugger pour voir ce qui se passe quand le client demande un ID
+  
   this._app.post('/:key/:id/:token/id', function (req, res, next) {
     var id = req.params.id;
     var token = req.params.token;
