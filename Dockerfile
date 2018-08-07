@@ -10,6 +10,8 @@ add package.json ./
 
 expose 8080
 
+run apt-get install nano
+
 run npm install
 
 cmd npm start

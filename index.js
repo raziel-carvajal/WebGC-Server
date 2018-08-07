@@ -29,10 +29,9 @@ SignalingService.prototype._initializeHTTP = function() {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    debug('Request Content: <'+ req +'>')
+    debug('Response Content: <'+ res + '>') 
     next();
-    debug('Content of Request' + req)
-    debug('Content of Response' + res)
-    
   }
   var self = this;
   this._app.use(restify.bodyParser({ mapParams: false }));
@@ -41,7 +40,8 @@ SignalingService.prototype._initializeHTTP = function() {
   // Retrieve guaranteed random ID.
 
   this._app.get('/:key/id', function (req, res, next) {
-    debug('ID-GEN')
+    debug('requestGET: ' + req + 'result: ' + res  + 'next' + next  )  //New debug
+    debug('ID-	GEN')
     res.contentType = 'text/html';
     res.send(self._generateClientId(req.params.key));
     return next();
@@ -50,6 +50,7 @@ SignalingService.prototype._initializeHTTP = function() {
   // Ici il faut debugger pour voir ce qui se passe quand le client demande un ID
   
   this._app.post('/:key/:id/:token/id', function (req, res, next) {
+    debug('requestPOST: ' + req + 'result: ' + res + 'next:' + next ) //New Debug
     var id = req.params.id;
     var token = req.params.token;
     var key = req.params.key;
@@ -99,9 +100,13 @@ SignalingService.prototype._initializeHTTP = function() {
     return next();
   };
   // PeerServer code ENDS ////////////////////////////////////////////////////////
+  //############################################################################
+  //############################################################################
+
   // SingnalingService code STARTS////////////////////////////////////////////////
   this._app.get('/:key/:id/peerToBoot', function (req, res, next) {
     debug('peerToBoot')
+    console.log(req.params.id)
     var id = req.params.id
     var key = req.params.key
     var peer = 'undefined'
@@ -114,7 +119,7 @@ SignalingService.prototype._initializeHTTP = function() {
         if (Object.keys(self._clients[key]).length > 0) peer = self._getInRoundRobin(id)
         var answ = {'peer': peer}
         var answTxt = JSON.stringify(answ)
-        debug('For ' + id + ' the next peer to boot was chosen ' + peer + ' with answer: ' + answTxt)
+         debug('For ' + id + ' the next peer to boot was chosen ' + peer + ' with answer: ' + answTxt)
         res.send(answTxt)
       } else {
         res.send(JSON.stringify({
