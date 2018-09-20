@@ -4,6 +4,8 @@ var inherits = require('util').inherits
 // const PeerServer = require('peer').PeerServer.super_.init
 const PeerServer = require('peer').PeerServer
 
+
+
 function SignalingService(options) {
   if (!(this instanceof SignalingService)) return new SignalingService(options)
   PeerServer.call(this, options)
@@ -13,6 +15,7 @@ function SignalingService(options) {
   this.keepAlives = {}
   this.maxKeepAlives = options.maxKeepAlives
   this.checkForDeadPeers = options.checkForDeadPeers
+  this._port = options.port
   var self = this
   setInterval(function () { self.removeDeadPeers() }, this.checkForDeadPeers)
   debug('SignalingService.init')
@@ -20,6 +23,8 @@ function SignalingService(options) {
 
 debug('hinherits')
 inherits(SignalingService, PeerServer)
+
+SignalingService.prototype._app = restify.createServer();
 // TODO The only way to attach the Gossip HTTP request in this server was to
 // overwrite this method. Is it possible to add HTTP GETs/POSTs once the
 // restify server listens ?
@@ -34,8 +39,8 @@ SignalingService.prototype._initializeHTTP = function() {
     next();
   }
   var self = this;
-  this._app.use(restify.bodyParser({ mapParams: false }));
-  this._app.use(restify.queryParser());
+  this._app.use(restify.plugins.bodyParser({ mapParams: false }));
+  this._app.use(restify.plugins.queryParser());
   this._app.use(allowCrossDomain);
   // Retrieve guaranteed random ID.
 
@@ -168,7 +173,7 @@ SignalingService.prototype._initializeHTTP = function() {
   this._app.post('/:key/:id/:token/answer', handle);
   this._app.post('/:key/:id/:token/leave', handle);
   // Listen on user-specified port.
-  this._app.listen(this._options.port)
+  this._app.listen(this._port)
   // PeerServer code ENDS
 };
 SignalingService.prototype._getInRoundRobin = function (emitter) {
