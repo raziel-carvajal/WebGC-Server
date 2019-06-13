@@ -8,6 +8,10 @@ Be sure that [NodeJS](http://nodejs.org/), [Bower](http://bower.io/), [Git](http
 
 - Type the command ``` npm install ```
 
+## Usage
+
+`npm config set serverjs-gossip:port 9990`   
+`npm start`
 
 
 # IDDN

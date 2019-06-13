@@ -6,8 +6,11 @@
   "directories": {
     "example": "examples"
   },
+  "config": {
+    "port": "8080"
+  },
   "scripts": {
-    "start": "DEBUG=* node launch.js 8080 > Signaling-Service.log",
+    "start": "DEBUG=* node launch.js $npm_package_config_port > Signaling-Service.log",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,9 +26,9 @@
   "author": "Raziel Carvajal <raziel.carvajal@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "peer": "0.2.1",
-    "restify": "3.0.3",
-    "commander": "2.8.1",
-    "debug": "2.2.0"
+    "commander": "^2.18.0",
+    "debug": "^4.0.1",
+    "peer": "^0.2.10",
+    "restify": "^7.2.1"
   }
 }
